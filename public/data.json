@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1746624860507",
+    "type": "滷蛋",
+    "initial": 5,
+    "remaining": 5
+  },
+  {
+    "id": "1746624864667",
+    "type": "豆干",
+    "initial": 8,
+    "remaining": 8
+  },
+  {
+    "id": "1746624870070",
+    "type": "水果組合",
+    "initial": 3,
+    "remaining": 3
+  },
+  {
+    "id": "1747290402974",
+    "type": "沙拉",
+    "initial": 2,
+    "remaining": 2
+  },
+  {
+    "id": "1747290402975",
+    "type": "飯糰",
+    "initial": 8,
+    "remaining": 8
+  },
+  {
+    "id": "1747290402976",
+    "type": "便當",
+    "initial": 3,
+    "remaining": 3
+  }
+]

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodShare - 智慧剩食共享平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            background-color: #f7f5f2;
+        }
+        
+        .map-container {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Crect width='800' height='800' fill='%23f7f5f2'/%3E%3Cpath d='M0 0h800v800H0z' fill='%23f7f5f2'/%3E%3Cpath d='M100 100h600v600H100z' fill='%23f0ede8'/%3E%3Cpath d='M150 150h500v500H150z' fill='%23f7f5f2'/%3E%3Cpath d='M50 200h700v20H50zm0 100h700v10H50zm0 100h700v15H50zm0 100h700v10H50zm0 100h700v20H50zM200 50v700h20V50zm100 0v700h10V50zm100 0v700h15V50zm100 0v700h10V50zm100 0v700h20V50z' fill='%23e8e5e0'/%3E%3Cpath d='M300 300h200v200H300z' fill='%23e0ddd8'/%3E%3Cpath d='M350 200h20v400h-20zm-150 150h400v20H200z' fill='%23d8d5d0'/%3E%3C/svg%3E");
+            background-size: cover;
+            position: relative;
+            height: 80vh;
+        }
+        
+        .food-marker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 107, 0, 0.9);
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .food-marker:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .food-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .food-item {
+            transition: all 0.2s ease;
+        }
+        
+        .food-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #FF6B00;
+            border-radius: 2px;
+        }
+        
+        .badge {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .badge:hover {
+            transform: translateY(-5px);
+        }
+        
+        .badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B00, #FF8A3D);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .phone-mockup {
+            position: relative;
+            width: 280px;
+            height: 560px;
+            background-color: #111;
+            border-radius: 36px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .step-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            margin: 0 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-indicator.active {
+            background-color: #FF6B00;
+            transform: scale(1.2);
+        }
+        
+        .user-post {
+            border-left: 4px solid #FF6B00;
+        }
+        
+        .campus-selector {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .add-food-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #FF6B00;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .add-food-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(255, 107, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-[#f7f5f2] text-gray-800">
+    <!-- 導航列選單 -->
+    <nav class="bg-black text-white sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="text-2xl font-bold text-[#FF6B00] mr-2">FoodShare</div>
+                <span class="bg-[#FF6B00] text-white text-xs px-2 py-1 rounded-full">Beta</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-item active cursor-pointer">附近食物點位</a>
+                <a href="missions.html" class="nav-item cursor-pointer">任務與成就</a>
+                <a href="orders.html" class="nav-item cursor-pointer">我的訂單</a>
+                <a href="notifications.html" class="nav-item cursor-pointer relative">
+                    通知中心
+                    <span class="absolute -top-2 -right-2 bg-[#FF6B00] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
+                </a>
+            </div>
+            
+            <div class="md:hidden">
+                <button class="text-white">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要視覺區：地圖 -->
+    <div class="map-container">
+        <!-- 校區選擇器 -->
+        <div class="campus-selector">
+            <i data-feather="map-pin" class="w-4 h-4 text-[#FF6B00] mr-2"></i>
+            <span class="font-medium">陽明交通大學（光復校區）</span>
+            <i data-feather="chevron-down" class="w-4 h-4 ml-2 text-gray-500"></i>
+        </div>
+        
+        <!-- 食物分享點標記 -->
+        <div class="food-marker" style="top: 30%; left: 25%;" onclick="showFoodInfo('1746624860507')">
+            <i data-feather="package" class="w-5 h-5"></i>
+        </div>
+        <div class="food-marker" style="top: 45%; left: 40%;" onclick="showFoodInfo('1746624864667')">
+            <i data-feather="package" class="w-5 h-5"></i>
+        </div>
+        <div class="food-marker" style="top: 35%; left: 60%;" onclick="showFoodInfo('1746624870070')">
+            <i data-feather="package" class="w-5 h-5"></i>
+        </div>
+        <div class="food-marker" style="top: 55%; left: 70%;" onclick="showFoodInfo('1747290402974')">
+            <i data-feather="package" class="w-5 h-5"></i>
+        </div>
+        
+        <!-- 發布食物分享按鈕 -->
+        <div class="add-food-button" onclick="showAddFoodModal()">
+            <i data-feather="plus" class="w-6 h-6"></i>
+        </div>
+        
+        <!-- 左下角浮出的食物列表 -->
+        <div class="absolute bottom-8 left-8 bg-white rounded-xl shadow-xl p-4 w-80 max-w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg">附近可領取的食物</h3>
+                <span class="text-[#FF6B00] text-sm cursor-pointer">查看全部</span>
+            </div>
+            <div class="food-list space-y-3">
+                <!-- 動態生成食物列表 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 食物詳情彈窗 -->
+    <div id="foodInfoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl" id="modalTitle">食物詳情</h3>
+                <button onclick="closeFoodInfo()" class="text-gray-500 hover:text-gray-700">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="modalContent" class="space-y-4">
+                <!-- 動態內容 -->
+            </div>
+            <div class="mt-6 flex space-x-3">
+                <button onclick="closeFoodInfo()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="showReservationSelection()" class="flex-1 py-2 bg-[#FF6B00] text-white rounded-lg hover:bg-[#FF8A3D]">預約領取</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 發布食物分享彈窗 -->
+    <div id="addFoodModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">發布食物分享</h3>
+                <button onclick="closeAddFoodModal()" class="text-gray-500 hover:text-gray-700">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">食物名稱</label>
+                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent" placeholder="例如：便當、飲料、點心...">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">數量</label>
+                    <div class="flex items-center">
+                        <input type="number" class="w-20 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent" value="1" min="1">
+                        <span class="mx-2">份</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">地點</label>
+                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent" placeholder="例如：人社院一樓、圖書館前...">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">可領取時間</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="time" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent">
+                        <input type="time" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">描述</label>
+                    <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent h-24" placeholder="描述食物的狀態、來源等信息..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">上傳照片</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50">
+                        <i data-feather="camera" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                        <p class="text-gray-500">點擊上傳照片</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex space-x-3">
+                <button onclick="closeAddFoodModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="publishFood()" class="flex-1 py-2 bg-[#FF6B00] text-white rounded-lg hover:bg-[#FF8A3D]">發布</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 預約選擇彈窗 -->
+    <div id="reservationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">選擇預約數量</h3>
+                <button onclick="closeReservationModal()" class="text-gray-500 hover:text-gray-700">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="reservationContent" class="space-y-4">
+                <!-- 動態內容 -->
+            </div>
+            <div class="mt-6 flex space-x-3">
+                <button onclick="closeReservationModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="confirmReservation()" class="flex-1 py-2 bg-[#FF6B00] text-white rounded-lg hover:bg-[#FF8A3D]">確認預約</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 任務與成就模組 -->
+    <section class="py-16 bg-[#f7f5f2]">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">任務與成就</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">每週任務</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">領取 3 次剩食</span>
+                                <span class="text-[#FF6B00]">2/3</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 66%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">分享 App 給朋友</span>
+                                <span class="text-[#FF6B00]">完成!</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="font-medium">評價 5 家店家</span>
+                                <span class="text-[#FF6B00]">3/5</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <button class="bg-[#FF6B00] text-white px-6 py-2 rounded-lg hover:bg-[#FF8A3D] transition">
+                            領取獎勵
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">我的成就</h3>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- 貓熊成就 -->
+                        <div class="badge bg-gradient-to-br from-[#FF6B00] to-[#FF8A3D] rounded-lg p-4 text-center text-white">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 10C8.55228 10 9 9.55228 9 9C9 8.44772 8.55228 8 8 8C7.44772 8 7 8.44772 7 9C7 9.55228 7.44772 10 8 10Z" fill="white"/>
+                                    <path d="M16 10C16.5523 10 17 9.55228 17 9C17 8.44772 16.5523 8 16 8C15.4477 8 15 8.44772 15 9C15 9.55228 15.4477 10 16 10Z" fill="white"/>
+                                    <path d="M8 14H16M8 17H16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium">貓熊達人</p>
+                        </div>
+                        
+                        <!-- 狐狸成就 -->
+                        <div class="badge bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg p-4 text-center text-white">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 6L12 2L16 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M4 10C4 10 6 14 12 14C18 14 20 10 20 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6 18C7.5 16 9.5 15 12 15C14.5 15 16.5 16 18 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10 20.5C10.5 20 11 20 12 20C13 20 13.5 20 14 20.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium">狐狸先鋒</p>
+                        </div>
+                        
+                        <div class="badge bg-gradient-to-br from-[#FF6B00] to-[#FF8A3D] rounded-lg p-4 text-center text-white">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <i data-feather="heart" class="w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm font-medium">分享天使</p>
+                        </div>
+                        
+                        <div class="badge bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg p-4 text-center text-white opacity-50">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 10C8.55228 10 9 9.55228 9 9C9 8.44772 8.55228 8 8 8C7.44772 8 7 8.44772 7 9C7 9.55228 7.44772 10 8 10Z" fill="white"/>
+                                    <path d="M16 10C16.5523 10 17 9.55228 17 9C17 8.44772 16.5523 8 16 8C15.4477 8 15 8.44772 15 9C15 9.55228 15.4477 10 16 10Z" fill="white"/>
+                                    <path d="M8 14H16M8 17H16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium">貓熊衛士</p>
+                        </div>
+                        
+                        <div class="badge bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg p-4 text-center text-white opacity-50">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 6L12 2L16 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M4 10C4 10 6 14 12 14C18 14 20 10 20 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6 18C7.5 16 9.5 15 12 15C14.5 15 16.5 16 18 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10 20.5C10.5 20 11 20 12 20C13 20 13.5 20 14 20.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium">狐狸達人</p>
+                        </div>
+                        
+                        <div class="badge bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg p-4 text-center text-white opacity-50">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <i data-feather="users" class="w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm font-medium">社群之星</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center justify-between">
+                        <div>
+                            <span class="text-sm text-gray-500">永續等級</span>
+                            <div class="flex items-center">
+                                <span class="text-xl font-bold mr-2">Lv.8</span>
+                                <div class="progress-bar w-24">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="text-[#FF6B00] hover:text-[#FF8A3D] flex items-center">
+                            查看全部成就
+                            <i data-feather="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- APP 操作展示區 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-4">如何使用 FoodShare</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">簡單三步驟，輕鬆領取剩食，一起為地球永續盡一份心力</p>
+            
+            <div class="flex flex-col md:flex-row items-center justify-center">
+                <div class="phone-mockup mb-8 md:mb-0 md:mr-12">
+                    <div class="phone-screen" id="phoneScreen">
+                        <!-- 步驟1：瀏覽與選擇 -->
+                        <div class="step-screen active" id="step1">
+                            <div class="bg-black text-white p-4 flex justify-between items-center">
+                                <div class="text-lg font-bold">FoodShare</div>
+                                <i data-feather="bell" class="w-5 h-5"></i>
+                            </div>
+                            <div class="p-4">
+                                <div class="bg-gray-100 rounded-lg p-2 mb-4 flex">
+                                    <i data-feather="search" class="w-5 h-5 text-gray-400 mr-2"></i>
+                                    <span class="text-gray-400">搜尋附近的剩食...</span>
+                                </div>
+                                
+                                <h3 class="font-bold mb-3">附近的剩食</h3>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-3 mb-3 border-l-4 border-[#FF6B00]">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-medium">藤村屋滷味</h4>
+                                        <span class="text-[#FF6B00] text-sm">350m</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-2">滷蛋 x5、豆干 x8</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="bg-[#FFF0E6] text-[#FF6B00] text-xs px-2 py-1 rounded-full mr-2">
+                                                30分鐘
+                                            </div>
+                                            <div class="text-xs text-gray-400">19:00前</div>
+                                        </div>
+                                        <button class="bg-[#FF6B00] text-white text-sm px-3 py-1 rounded-lg">
+                                            預約
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-3 mb-3">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-medium">強尼兄弟健康廚房</h4>
+                                        <span class="text-[#FF6B00] text-sm">500m</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-2">水果組合 x3、沙拉 x2</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="bg-[#FFF0E6] text-[#FF6B00] text-xs px-2 py-1 rounded-full mr-2">
+                                                45分鐘
+                                            </div>
+                                            <div class="text-xs text-gray-400">20:00前</div>
+                                        </div>
+                                        <button class="bg-[#FF6B00] text-white text-sm px-3 py-1 rounded-lg">
+                                            預約
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-3 mb-3">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-medium">姊妹飯桶</h4>
+                                        <span class="text-[#FF6B00] text-sm">800m</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-2">飯糰 x8、便當 x3</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="bg-[#FFF0E6] text-[#FF6B00] text-xs px-2 py-1 rounded-full mr-2">
+                                                15分鐘
+                                            </div>
+                                            <div class="text-xs text-gray-400">18:30前</div>
+                                        </div>
+                                        <button class="bg-[#FF6B00] text-white text-sm px-3 py-1 rounded-lg">
+                                            預約
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-3 border-l-4 border-blue-500">
+                                    <div class="flex items-center mb-2">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='24' height='24'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23e0e0e0'/%3E%3Cpath d='M36 40a14 14 0 1 1 28 0 14 14 0 0 1-28 0zm-8 40c0-10 16-16 22-16s22 6 22 16v6H28v-6z' fill='%23bdbdbd'/%3E%3C/svg%3E" alt="User" class="w-6 h-6 rounded-full mr-2">
+                                        <h4 class="font-medium">Jason</h4>
+                                        <span class="text-blue-500 text-xs ml-2">個人分享</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-2">免費便當！想要的人可以來拿喔！</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <i data-feather="map-pin" class="w-3 h-3 text-gray-400 mr-1"></i>
+                                            <span class="text-xs text-gray-400">人社院 - 200m</span>
+                                        </div>
+                                        <button class="bg-blue-500 text-white text-sm px-3 py-1 rounded-lg">
+                                            聯絡
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 步驟2：取得密碼 -->
+                        <div class="step-screen hidden" id="step2">
+                            <div class="bg-black text-white p-4 flex justify-between items-center">
+                                <div class="text-lg font-bold">訂單確認</div>
+                                <i data-feather="x" class="w-5 h-5"></i>
+                            </div>
+                            <div class="p-4">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 flex items-center">
+                                    <div class="bg-green-100 p-2 rounded-full mr-3">
+                                        <i data-feather="check-circle" class="w-5 h-5 text-green-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-green-700 font-medium">預約成功！</p>
+                                        <p class="text-sm text-green-600">請在指定時間內前往領取</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                                    <h3 class="font-bold mb-2">藤村屋滷味</h3>
+                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                        <i data-feather="map-pin" class="w-4 h-4 mr-1"></i>
+                                        <span>光復校區 - 第二餐廳一樓</span>
+                                    </div>
+                                    
+                                    <div class="border-t border-b border-gray-100 py-3 my-3">
+                                        <div class="flex justify-between mb-2">
+                                            <span>滷蛋</span>
+                                            <span>x2</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>豆干</span>
+                                            <span>x3</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-500">領取時間</span>
+                                        <span>今日 18:30-19:00</span>
+                                    </div>
+                                    
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">訂單編號</span>
+                                        <span>#FS78392</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                                    <h3 class="font-bold mb-3">領取密碼</h3>
+                                    <div class="bg-[#FFF0E6] py-4 rounded-lg mb-3">
+                                        <div class="text-3xl font-bold tracking-widest text-[#FF6B00]">
+                                            8421
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-500">請向店家出示此密碼以領取食物</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 步驟3：完成領取 -->
+                        <div class="step-screen hidden" id="step3">
+                            <div class="bg-black text-white p-4 flex justify-between items-center">
+                                <div class="text-lg font-bold">訂單完成</div>
+                                <i data-feather="x" class="w-5 h-5"></i>
+                            </div>
+                            <div class="p-4 text-center">
+                                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i data-feather="check" class="w-12 h-12 text-green-500"></i>
+                                </div>
+                                
+                                <h3 class="text-xl font-bold mb-2">領取成功！</h3>
+                                <p class="text-gray-500 mb-6">感謝您參與食物共享計畫</p>
+                                
+                                <div class="bg-[#FFF0E6] rounded-lg p-4 mb-6">
+                                    <div class="flex items-center justify-center mb-3">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
+                                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8 10C8.55228 10 9 9.55228 9 9C9 8.44772 8.55228 8 8 8C7.44772 8 7 8.44772 7 9C7 9.55228 7.44772 10 8 10Z" fill="#FF6B00"/>
+                                            <path d="M16 10C16.5523 10 17 9.55228 17 9C17 8.44772 16.5523 8 16 8C15.4477 8 15 8.44772 15 9C15 9.55228 15.4477 10 16 10Z" fill="#FF6B00"/>
+                                            <path d="M8 14H16M8 17H16" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                        <span class="font-medium">獲得成就</span>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center">
+                                        <div class="text-left">
+                                            <p class="font-medium">貓熊達人</p>
+                                            <div class="flex items-center">
+                                                <span class="text-xs text-gray-500 mr-2">進度</span>
+                                                <div class="progress-bar w-24 h-2">
+                                                    <div class="progress-fill" style="width: 60%"></div>
+                                                </div>
+                                                <span class="text-xs text-[#FF6B00] ml-2">3/5</span>
+                                            </div>
+                                        </div>
+                                        <div class="bg-[#FFF0E6] p-2 rounded-full">
+                                            <i data-feather="plus" class="w-4 h-4 text-[#FF6B00]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                                    <h4 class="font-medium mb-2">您節省了</h4>
+                                    <div class="flex justify-around">
+                                        <div>
+                                            <div class="text-2xl font-bold text-[#FF6B00]">0.8</div>
+                                            <div class="text-xs text-gray-500">公斤食物</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-2xl font-bold text-[#FF6B00]">1.2</div>
+                                            <div class="text-xs text-gray-500">公斤碳排放</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-2xl font-bold text-[#FF6B00]">$85</div>
+                                            <div class="text-xs text-gray-500">新台幣</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="bg-[#FF6B00] text-white px-6 py-3 rounded-lg w-full">
+                                    返回首頁
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2">
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-[#FF6B00] text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                1
+                            </div>
+                            <h3 class="text-xl font-bold">瀏覽與選擇</h3>
+                        </div>
+                        <p class="text-gray-600 ml-11">在地圖上瀏覽附近的剩食點位，查看詳細資訊並選擇您想要的食物。系統會顯示距離、可領取時間和剩餘數量等資訊。</p>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-[#FF6B00] text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                2
+                            </div>
+                            <h3 class="text-xl font-bold">取得領取密碼</h3>
+                        </div>
+                        <p class="text-gray-600 ml-11">預約成功後，系統會生成專屬領取密碼。您可以在指定時間內前往店家，出示密碼即可領取食物，無需額外付款。</p>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-[#FF6B00] text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                3
+                            </div>
+                            <h3 class="text-xl font-bold">完成領取</h3>
+                        </div>
+                        <p class="text-gray-600 ml-11">領取食物後，系統會記錄您的環保貢獻，包括節省的食物重量、減少的碳排放量，並提供相應的成就和獎勵。</p>
+                    </div>
+                    
+                    <div class="flex justify-center mt-8">
+                        <div class="flex space-x-2">
+                            <div class="step-indicator active" data-step="1"></div>
+                            <div class="step-indicator" data-step="2"></div>
+                            <div class="step-indicator" data-step="3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 全局變量
+        let currentFoodData = null;
+        let foodList = [];
+
+        // 從 data.json 加載食物數據
+        async function loadFoodData() {
+            try {
+                const response = await fetch('data.json');
+                foodList = await response.json();
+                updateFoodList();
+            } catch (error) {
+                console.error('Error loading food data:', error);
+            }
+        }
+
+        // 更新食物列表顯示
+        function updateFoodList() {
+            const foodListContainer = document.querySelector('.food-list');
+            foodListContainer.innerHTML = foodList.map(food => `
+                <div class="food-item bg-gray-50 rounded-lg p-3 cursor-pointer flex items-center" onclick="showFoodInfo('${food.id}')">
+                    <div class="bg-[#FFF0E6] p-2 rounded-lg mr-3">
+                        <i data-feather="package" class="w-5 h-5 text-[#FF6B00]"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-medium">${food.type}</h4>
+                        <p class="text-sm text-gray-500">剩餘: ${food.remaining}/${food.initial}</p>
+                        <div class="flex items-center mt-1">
+                            <i data-feather="map-pin" class="w-3 h-3 text-gray-400 mr-1"></i>
+                            <span class="text-xs text-gray-400">距離 350 公尺</span>
+                        </div>
+                    </div>
+                    <div class="bg-[#FF6B00] text-white text-xs px-2 py-1 rounded-full">
+                        30分鐘
+                    </div>
+                </div>
+            `).join('');
+            feather.replace();
+        }
+
+        // 顯示食物詳情
+        function showFoodInfo(id) {
+            const food = foodList.find(f => f.id === id);
+            if (!food) return;
+
+            currentFoodData = food;
+            const modal = document.getElementById('foodInfoModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            title.textContent = food.type;
+            content.innerHTML = `
+                <div class="flex items-center mb-4">
+                    <div class="bg-[#FFF0E6] p-3 rounded-lg mr-4">
+                        <i data-feather="package" class="w-6 h-6 text-[#FF6B00]"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center">
+                            <i data-feather="map-pin" class="w-4 h-4 text-gray-400 mr-1"></i>
+                            <span class="text-sm text-gray-500">光復校區 - 第二餐廳一樓</span>
+                        </div>
+                        <div class="flex items-center mt-1">
+                            <i data-feather="clock" class="w-4 h-4 text-gray-400 mr-1"></i>
+                            <span class="text-sm text-gray-500">今日 18:30-19:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <h4 class="font-medium mb-2">可領取食物</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-[#FF6B00] rounded-full mr-2"></div>
+                                <span>${food.type}</span>
+                            </div>
+                            <span>x${food.remaining}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-[#FFF0E6] rounded-lg p-4">
+                    <div class="flex items-center mb-2">
+                        <i data-feather="info" class="w-4 h-4 text-[#FF6B00] mr-2"></i>
+                        <h4 class="font-medium">店家備註</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">請於指定時間內領取，謝謝配合！</p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            feather.replace();
+        }
+
+        // 顯示預約選擇頁面
+        function showReservationSelection() {
+            if (!currentFoodData) return;
+            
+            const modal = document.getElementById('reservationModal');
+            const content = document.getElementById('reservationContent');
+            
+            content.innerHTML = `
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium mb-4">選擇預約數量</h4>
+                    <div class="flex items-center justify-between">
+                        <span>${currentFoodData.type}</span>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity(-1)" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                <i data-feather="minus" class="w-4 h-4"></i>
+                            </button>
+                            <span id="reservationQuantity" class="w-8 text-center">1</span>
+                            <button onclick="updateQuantity(1)" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                <i data-feather="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('foodInfoModal').classList.add('hidden');
+            modal.classList.remove('hidden');
+            feather.replace();
+        }
+
+        // 更新預約數量
+        function updateQuantity(change) {
+            const quantityElement = document.getElementById('reservationQuantity');
+            let quantity = parseInt(quantityElement.textContent) + change;
+            
+            // 確保數量在有效範圍內
+            quantity = Math.max(1, Math.min(quantity, currentFoodData.remaining));
+            quantityElement.textContent = quantity;
+        }
+
+        // 關閉預約選擇彈窗
+        function closeReservationModal() {
+            document.getElementById('reservationModal').classList.add('hidden');
+        }
+
+        // 確認預約
+        async function confirmReservation() {
+            if (!currentFoodData) return;
+            
+            const quantity = parseInt(document.getElementById('reservationQuantity').textContent);
+            
+            try {
+                // 更新本地數據
+                const foodIndex = foodList.findIndex(f => f.id === currentFoodData.id);
+                if (foodIndex !== -1) {
+                    foodList[foodIndex].remaining -= quantity;
+                    
+                    // 更新顯示
+                    updateFoodList();
+                    
+                    // 關閉彈窗
+                    closeReservationModal();
+                    
+                    // 顯示成功訊息
+                    alert(`預約成功！已預約 ${quantity} 個 ${currentFoodData.type}`);
+                }
+            } catch (error) {
+                console.error('Error updating reservation:', error);
+                alert('預約失敗，請稍後再試');
+            }
+        }
+
+        // 頁面加載時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+            loadFoodData();
+            
+            // 設置步驟切換
+            const stepIndicators = document.querySelectorAll('.step-indicator');
+            stepIndicators.forEach(indicator => {
+                indicator.addEventListener('click', function() {
+                    const step = this.getAttribute('data-step');
+                    showStep(step);
+                });
+            });
+            
+            // 每5秒自動切換步驟
+            let currentStep = 1;
+            setInterval(() => {
+                currentStep = currentStep % 3 + 1;
+                showStep(currentStep);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

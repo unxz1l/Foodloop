@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知中心 - FoodShare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f7f5f2;
+        }
+        
+        .notification-card {
+            transition: all 0.3s ease;
+        }
+        
+        .notification-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .notification-unread::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -4px;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background-color: #FF6B00;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-[#f7f5f2] text-gray-800">
+    <!-- 導航列選單 -->
+    <nav class="bg-black text-white sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="index.html" class="text-2xl font-bold text-[#FF6B00] mr-2">FoodShare</a>
+                <span class="bg-[#FF6B00] text-white text-xs px-2 py-1 rounded-full">Beta</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-item cursor-pointer">附近食物點位</a>
+                <a href="missions.html" class="nav-item cursor-pointer">任務與成就</a>
+                <a href="orders.html" class="nav-item cursor-pointer">我的訂單</a>
+                <a href="notifications.html" class="nav-item active cursor-pointer relative">
+                    通知中心
+                    <span class="absolute -top-2 -right-2 bg-[#FF6B00] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
+                </a>
+            </div>
+            
+            <div class="md:hidden">
+                <button class="text-white">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold">通知中心</h1>
+            <div class="flex space-x-4">
+                <button class="px-4 py-2 text-[#FF6B00] border border-[#FF6B00] rounded-lg hover:bg-[#FFF0E6]">
+                    全部通知
+                </button>
+                <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    系統通知
+                </button>
+                <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    訂單通知
+                </button>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <!-- 訂單通知 -->
+            <div class="notification-card notification-unread relative bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-start">
+                    <div class="bg-[#FFF0E6] p-3 rounded-lg mr-4">
+                        <i data-feather="package" class="w-6 h-6 text-[#FF6B00]"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">訂單預約成功</h3>
+                            <span class="text-sm text-gray-500">10分鐘前</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">您已成功預約藤村屋滷味的食物，請在今日 18:30-19:00 前往領取。</p>
+                        <div class="flex space-x-3">
+                            <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                查看訂單
+                            </button>
+                            <button class="px-4 py-2 bg-[#FF6B00] text-white rounded-lg hover:bg-[#FF8A3D]">
+                                前往領取
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成就通知 -->
+            <div class="notification-card notification-unread relative bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-start">
+                    <div class="bg-[#FFF0E6] p-3 rounded-lg mr-4">
+                        <i data-feather="award" class="w-6 h-6 text-[#FF6B00]"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">獲得新成就</h3>
+                            <span class="text-sm text-gray-500">30分鐘前</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">恭喜您獲得「貓熊達人」成就！您已成功領取 10 次剩食，為環保盡一份心力。</p>
+                        <div class="flex space-x-3">
+                            <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                查看成就
+                            </button>
+                            <button class="px-4 py-2 bg-[#FF6B00] text-white rounded-lg hover:bg-[#FF8A3D]">
+                                分享成就
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系統通知 -->
+            <div class="notification-card notification-unread relative bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-start">
+                    <div class="bg-[#FFF0E6] p-3 rounded-lg mr-4">
+                        <i data-feather="bell" class="w-6 h-6 text-[#FF6B00]"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">系統更新通知</h3>
+                            <span class="text-sm text-gray-500">2小時前</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">FoodShare 已更新至最新版本，新增了更多環保成就和獎勵機制，快來體驗吧！</p>
+                        <div class="flex space-x-3">
+                            <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                了解詳情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 已讀通知 -->
+            <div class="notification-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-start">
+                    <div class="bg-gray-100 p-3 rounded-lg mr-4">
+                        <i data-feather="check-circle" class="w-6 h-6 text-gray-400"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">訂單完成</h3>
+                            <span class="text-sm text-gray-500">昨天</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">您已成功領取強尼兄弟健康廚房的食物，感謝您的參與！</p>
+                        <div class="flex space-x-3">
+                            <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                評價訂單
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分頁 -->
+        <div class="flex justify-center mt-8">
+            <div class="flex space-x-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">
+                    <i data-feather="chevron-left" class="w-5 h-5"></i>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#FF6B00] text-white">
+                    1
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">
+                    2
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">
+                    3
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">
+                    <i data-feather="chevron-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,23 @@
+/* styles/main.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+.tech-button {
+  background: linear-gradient(90deg, #00f0ff, #0066ff);
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #00f0ff, 0 0 20px #0066ff;
+  transition: all 0.3s ease-in-out;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tech-button:hover {
+  background: linear-gradient(90deg, #0066ff, #00f0ff);
+  box-shadow: 0 0 20px #00f0ff, 0 0 30px #0066ff;
+  transform: scale(1.05);
+}
