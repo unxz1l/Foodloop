@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1746624860507",
+    "type": "滷味套餐",
+    "initial": 5,
+    "remaining": 3
+  },
+  {
+    "id": "1746624864667",
+    "type": "水果沙拉",
+    "initial": 3,
+    "remaining": 2
+  },
+  {
+    "id": "1746624870070",
+    "type": "便當",
+    "initial": 8,
+    "remaining": 5
+  },
+  {
+    "id": "1747290402974",
+    "type": "飲料",
+    "initial": 10,
+    "remaining": 7
+  }
+] 

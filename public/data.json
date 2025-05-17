@@ -1,38 +1,78 @@
-[
-  {
-    "id": "1746624860507",
-    "type": "滷蛋",
-    "initial": 5,
-    "remaining": 5
-  },
-  {
-    "id": "1746624864667",
-    "type": "豆干",
-    "initial": 8,
-    "remaining": 8
-  },
-  {
-    "id": "1746624870070",
-    "type": "水果組合",
-    "initial": 3,
-    "remaining": 3
-  },
-  {
-    "id": "1747290402974",
-    "type": "沙拉",
-    "initial": 2,
-    "remaining": 2
-  },
-  {
-    "id": "1747290402975",
-    "type": "飯糰",
-    "initial": 8,
-    "remaining": 8
-  },
-  {
-    "id": "1747290402976",
-    "type": "便當",
-    "initial": 3,
-    "remaining": 3
-  }
-]
+{
+  "nctu": [
+    {
+      "id": "user1",
+      "user": "Jason",
+      "time": "10分鐘",
+      "description": "免費便當！想要的人可以來拿喔！地點在人社院。",
+      "type": "便當",
+      "remaining": 5,
+      "location": "人社院 - 一樓交誼廳",
+      "pickupTime": "今日 17:00-18:00",
+      "note": "系上活動結束剩下的便當，有素食和葷食，先到先得！",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e0e0e0'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%23808080' text-anchor='middle' dominant-baseline='middle'%3E便當照片%3C/text%3E%3C/svg%3E"
+    },
+    {
+      "id": "user2",
+      "user": "Sarah",
+      "time": "25分鐘",
+      "description": "多買的水果組合，有蘋果、香蕉和橘子，歡迎來拿！",
+      "type": "水果組合",
+      "remaining": 3,
+      "location": "圖書館 - 一樓大廳",
+      "pickupTime": "今日 18:00-19:00",
+      "note": "水果都很新鮮，請自備袋子！",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e0e0e0'/%3E%3Ccircle cx='30' cy='50' r='10' fill='%23ff9999'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23ffff99'/%3E%3Ccircle cx='70' cy='50' r='10' fill='%23ffcc99'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%23808080' text-anchor='middle' dominant-baseline='middle'%3E水果照片%3C/text%3E%3C/svg%3E"
+    },
+    {
+      "id": "user3",
+      "user": "Mike",
+      "time": "40分鐘",
+      "description": "多買的滷味，有滷蛋和豆干，請自備容器！",
+      "type": "滷味",
+      "remaining": 2,
+      "location": "工程館 - 一樓休息區",
+      "pickupTime": "今日 19:00-20:00",
+      "note": "滷味還熱的，請盡快來拿！",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e0e0e0'/%3E%3Ccircle cx='30' cy='50' r='10' fill='%238B4513'/%3E%3Crect x='50' y='40' width='30' height='20' rx='5' fill='%238B4513'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%23808080' text-anchor='middle' dominant-baseline='middle'%3E滷味照片%3C/text%3E%3C/svg%3E"
+    }
+  ],
+  "nccu": [
+    {
+      "id": "user1",
+      "user": "王小明",
+      "time": "15分鐘",
+      "description": "多買的麵包和蛋糕，歡迎來拿！",
+      "type": "麵包和蛋糕",
+      "remaining": 4,
+      "location": "政大書院 - 一樓大廳",
+      "pickupTime": "今日 17:30-18:30",
+      "note": "麵包和蛋糕都是今天買的，很新鮮！",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e0e0e0'/%3E%3Ccircle cx='30' cy='50' r='15' fill='%23DEB887'/%3E%3Crect x='50' y='35' width='30' height='30' rx='5' fill='%23FFB6C1'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%23808080' text-anchor='middle' dominant-baseline='middle'%3E麵包和蛋糕照片%3C/text%3E%3C/svg%3E"
+    },
+    {
+      "id": "user2",
+      "user": "李小華",
+      "time": "30分鐘",
+      "description": "多買的飲料，有奶茶和咖啡，請自備杯子！",
+      "type": "飲料",
+      "remaining": 3,
+      "location": "商學院 - 一樓休息區",
+      "pickupTime": "今日 18:00-19:00",
+      "note": "飲料都是冰的，請盡快來拿！",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e0e0e0'/%3E%3Crect x='30' y='30' width='15' height='40' rx='2' fill='%23A0522D'/%3E%3Crect x='55' y='30' width='15' height='40' rx='2' fill='%238B4513'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%23808080' text-anchor='middle' dominant-baseline='middle'%3E飲料照片%3C/text%3E%3C/svg%3E"
+    },
+    {
+      "id": "user3",
+      "user": "張小美",
+      "time": "45分鐘",
+      "description": "多買的便當，有雞肉和豬肉口味，請自備餐具！",
+      "type": "便當",
+      "remaining": 2,
+      "location": "文學院 - 一樓交誼廳",
+      "pickupTime": "今日 19:00-20:00",
+      "note": "便當還熱的，請盡快來拿！",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e0e0e0'/%3E%3Crect x='20' y='30' width='60' height='40' rx='5' fill='%23DEB887'/%3E%3Crect x='25' y='35' width='50' height='30' rx='3' fill='%23FFA07A'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%23808080' text-anchor='middle' dominant-baseline='middle'%3E便當照片%3C/text%3E%3C/svg%3E"
+    }
+  ]
+}

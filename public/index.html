@@ -217,10 +217,23 @@
     <!-- 主要視覺區：地圖 -->
     <div class="map-container">
         <!-- 校區選擇器 -->
-        <div class="campus-selector">
+        <div class="campus-selector relative" onclick="toggleCampusDropdown()">
             <i data-feather="map-pin" class="w-4 h-4 text-[#FF6B00] mr-2"></i>
-            <span class="font-medium">陽明交通大學（光復校區）</span>
+            <span class="font-medium" id="selectedCampus">陽明交通大學（光復校區）</span>
             <i data-feather="chevron-down" class="w-4 h-4 ml-2 text-gray-500"></i>
+            
+            <!-- 校區下拉選單 -->
+            <div id="campusDropdown" class="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg hidden">
+                <div class="py-2">
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('政治大學（校本部）')">政治大學（校本部）</div>
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('政治大學（化南校區）')">政治大學（化南校區）</div>
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('陽明交通大學（博愛校區）')">陽明交通大學（博愛校區）</div>
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('陽明交通大學（陽明校區）')">陽明交通大學（陽明校區）</div>
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('陽明交通大學（光復校區）')">陽明交通大學（光復校區）</div>
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('清華大學（校本部）')">清華大學（校本部）</div>
+                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectCampus('清華大學（南大校區）')">清華大學（南大校區）</div>
+                </div>
+            </div>
         </div>
         
         <!-- 食物分享點標記 -->
@@ -237,9 +250,9 @@
             <i data-feather="package" class="w-5 h-5"></i>
         </div>
         
-        <!-- 發布食物分享按鈕 -->
-        <div class="add-food-button" onclick="showAddFoodModal()">
-            <i data-feather="plus" class="w-6 h-6"></i>
+        <!-- 橘色加號按鈕 -->
+        <div class="add-food-button" onclick="openFoodShareModal()">
+            <i data-feather="plus" class="w-8 h-8"></i>
         </div>
         
         <!-- 左下角浮出的食物列表 -->
@@ -760,12 +773,53 @@
         // 全局變量
         let currentFoodData = null;
         let foodList = [];
+        let currentCampus = 'nctu'; // 預設顯示陽明交通大學（光復校區）
 
-        // 從 data.json 加載食物數據
+        // 顯示食物分享彈窗
+        function openFoodShareModal() {
+            const modal = document.getElementById('addFoodModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                console.log('Opening food share modal');
+            } else {
+                console.error('Modal element not found');
+            }
+        }
+
+        // 關閉食物分享彈窗
+        function closeAddFoodModal() {
+            const modal = document.getElementById('addFoodModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // 發布食物
+        function publishFood() {
+            // 獲取表單數據
+            const foodName = document.querySelector('#addFoodModal input[type="text"]').value;
+            const quantity = document.querySelector('#addFoodModal input[type="number"]').value;
+            const location = document.querySelector('#addFoodModal input[placeholder*="地點"]').value;
+            const startTime = document.querySelector('#addFoodModal input[type="time"]:first-child').value;
+            const endTime = document.querySelector('#addFoodModal input[type="time"]:last-child').value;
+            const description = document.querySelector('#addFoodModal textarea').value;
+
+            // 這裡可以添加發布食物的邏輯
+            console.log('發布食物:', { foodName, quantity, location, startTime, endTime, description });
+            
+            // 關閉彈窗
+            closeAddFoodModal();
+            
+            // 顯示成功訊息
+            alert('食物分享發布成功！');
+        }
+
+        // 載入食物資料
         async function loadFoodData() {
             try {
                 const response = await fetch('data.json');
-                foodList = await response.json();
+                const data = await response.json();
+                foodList = data[currentCampus];
                 updateFoodList();
             } catch (error) {
                 console.error('Error loading food data:', error);
@@ -776,24 +830,20 @@
         function updateFoodList() {
             const foodListContainer = document.querySelector('.food-list');
             foodListContainer.innerHTML = foodList.map(food => `
-                <div class="food-item bg-gray-50 rounded-lg p-3 cursor-pointer flex items-center" onclick="showFoodInfo('${food.id}')">
-                    <div class="bg-[#FFF0E6] p-2 rounded-lg mr-3">
-                        <i data-feather="package" class="w-5 h-5 text-[#FF6B00]"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-medium">${food.type}</h4>
-                        <p class="text-sm text-gray-500">剩餘: ${food.remaining}/${food.initial}</p>
-                        <div class="flex items-center mt-1">
-                            <i data-feather="map-pin" class="w-3 h-3 text-gray-400 mr-1"></i>
-                            <span class="text-xs text-gray-400">距離 350 公尺</span>
+                <div class="food-item user-post bg-gray-50 rounded-lg p-3 mb-3 cursor-pointer" onclick="showFoodInfo('${food.id}')">
+                    <div class="flex items-center mb-2">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='40' height='40'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23e0e0e0'/%3E%3Cpath d='M36 40a14 14 0 1 1 28 0 14 14 0 0 1-28 0zm-8 40c0-10 16-16 22-16s22 6 22 16v6H28v-6z' fill='%23bdbdbd'/%3E%3C/svg%3E" alt="User" class="w-10 h-10 rounded-full mr-2">
+                        <div>
+                            <h4 class="font-medium">${food.user}</h4>
+                            <p class="text-xs text-gray-500">${food.time}前發布</p>
                         </div>
                     </div>
-                    <div class="bg-[#FF6B00] text-white text-xs px-2 py-1 rounded-full">
-                        30分鐘
+                    <p class="text-sm mb-2">${food.description}</p>
+                    <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        <img src="${food.image}" alt="Food" class="w-full h-32 object-cover">
                     </div>
                 </div>
             `).join('');
-            feather.replace();
         }
 
         // 顯示食物詳情
@@ -806,43 +856,41 @@
             const title = document.getElementById('modalTitle');
             const content = document.getElementById('modalContent');
             
-            title.textContent = food.type;
+            title.textContent = `${food.user} 的分享`;
             content.innerHTML = `
                 <div class="flex items-center mb-4">
-                    <div class="bg-[#FFF0E6] p-3 rounded-lg mr-4">
-                        <i data-feather="package" class="w-6 h-6 text-[#FF6B00]"></i>
-                    </div>
+                    <img src="${food.avatar || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' width=\'40\' height=\'40\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'45\' fill=\'%23e0e0e0\'/%3E%3Cpath d=\'M36 40a14 14 0 1 1 28 0 14 14 0 0 1-28 0zm-8 40c0-10 16-16 22-16s22 6 22 16v6H28v-6z\' fill=\'%23bdbdbd\'/%3E%3C/svg%3E'}" alt="User" class="w-10 h-10 rounded-full mr-2">
                     <div>
                         <div class="flex items-center">
-                            <i data-feather="map-pin" class="w-4 h-4 text-gray-400 mr-1"></i>
-                            <span class="text-sm text-gray-500">光復校區 - 第二餐廳一樓</span>
+                            <span class="font-medium">User ${food.user}</span>
+                            <span class="text-sm text-gray-500 ml-2">${food.time}前發布</span>
                         </div>
-                        <div class="flex items-center mt-1">
-                            <i data-feather="clock" class="w-4 h-4 text-gray-400 mr-1"></i>
-                            <span class="text-sm text-gray-500">今日 18:30-19:00</span>
-                        </div>
+                        <p class="text-sm text-gray-600">${food.description}</p>
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                    <h4 class="font-medium mb-2">可領取食物</h4>
-                    <div class="space-y-2">
-                        <div class="flex justify-between">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-[#FF6B00] rounded-full mr-2"></div>
-                                <span>${food.type}</span>
-                            </div>
-                            <span>x${food.remaining}</span>
-                        </div>
+                <div class="bg-gray-100 rounded-lg overflow-hidden mb-4">
+                    <img src="${food.image || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e0e0e0\'/%3E%3Ctext x=\'50\' y=\'50\' font-family=\'Arial\' font-size=\'12\' fill=\'%23808080\' text-anchor=\'middle\' dominant-baseline=\'middle\'%3E便當照片%3C/text%3E%3C/svg%3E'}" alt="Food" class="w-full h-48 object-cover">
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <i data-feather="map-pin" class="w-4 h-4 text-gray-400 mr-2"></i>
+                        <span class="text-sm">${food.location}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i data-feather="clock" class="w-4 h-4 text-gray-400 mr-2"></i>
+                        <span class="text-sm">${food.pickupTime}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i data-feather="package" class="w-4 h-4 text-gray-400 mr-2"></i>
+                        <span class="text-sm">剩餘：${food.type} x${food.remaining}</span>
                     </div>
                 </div>
                 
-                <div class="bg-[#FFF0E6] rounded-lg p-4">
-                    <div class="flex items-center mb-2">
-                        <i data-feather="info" class="w-4 h-4 text-[#FF6B00] mr-2"></i>
-                        <h4 class="font-medium">店家備註</h4>
-                    </div>
-                    <p class="text-sm text-gray-600">請於指定時間內領取，謝謝配合！</p>
+                <div class="mt-4 bg-[#FFF0E6] rounded-lg p-4">
+                    <h4 class="font-medium mb-2">發布者備註</h4>
+                    <p class="text-sm text-gray-600">${food.note}</p>
                 </div>
             `;
             
@@ -922,10 +970,53 @@
             }
         }
 
+        // 校區選擇器功能
+        function toggleCampusDropdown() {
+            const dropdown = document.getElementById('campusDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function selectCampus(campus) {
+            document.getElementById('selectedCampus').textContent = campus;
+            document.getElementById('campusDropdown').classList.add('hidden');
+            
+            // 根據選擇的校區更新資料
+            if (campus.includes('政治大學（校本部）')) {
+                currentCampus = 'nccu';
+            } else if (campus.includes('陽明交通大學（光復校區）')) {
+                currentCampus = 'nctu';
+            }
+            
+            // 重新載入並更新食物列表
+            loadFoodData();
+        }
+
+        // 點擊其他地方關閉下拉選單
+        document.addEventListener('click', function(event) {
+            const campusSelector = document.querySelector('.campus-selector');
+            const dropdown = document.getElementById('campusDropdown');
+            
+            if (!campusSelector.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
         // 頁面加載時初始化
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化 Feather 圖標
             feather.replace();
+            
+            // 加載食物數據
             loadFoodData();
+            
+            // 添加加號按鈕的點擊事件監聽器
+            const addButton = document.querySelector('.add-food-button');
+            if (addButton) {
+                addButton.addEventListener('click', openFoodShareModal);
+                console.log('Add button event listener added');
+            } else {
+                console.error('Add button not found');
+            }
             
             // 設置步驟切換
             const stepIndicators = document.querySelectorAll('.step-indicator');

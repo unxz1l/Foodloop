@@ -82,12 +82,70 @@
         </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- 任務區塊 -->
-            <div class="space-y-8">
+    <!-- 發布食物分享彈窗 -->
+    <div id="addFoodModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">發布食物分享</h3>
+                <button onclick="closeAddFoodModal()" class="text-gray-500 hover:text-gray-700">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">食物名稱</label>
+                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent" placeholder="例如：便當、飲料、點心...">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">數量</label>
+                    <div class="flex items-center">
+                        <input type="number" class="w-20 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent" value="1" min="1">
+                        <span class="mx-2">份</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">地點</label>
+                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent" placeholder="例如：人社院一樓、圖書館前...">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">可領取時間</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="time" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent">
+                        <input type="time" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">描述</label>
+                    <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent h-24" placeholder="描述食物的狀態、來源等信息..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">上傳照片</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50">
+                        <i data-feather="camera" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                        <p class="text-gray-500">點擊上傳照片</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex space-x-3">
+                <button onclick="closeAddFoodModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
+                <button onclick="publishFood()" class="flex-1 py-2 bg-[#FF6B00] text-white rounded-lg hover:bg-[#FF8A3D]">發布</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 任務與成就模組 -->
+    <section class="py-16 bg-[#f7f5f2]">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">任務與成就</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-xl font-bold mb-6">每週任務</h3>
+                    <h3 class="text-xl font-bold mb-4">每週任務</h3>
                     
                     <div class="space-y-6">
                         <div>
@@ -98,7 +156,6 @@
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: 66%"></div>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">獎勵：50 點環保積分</p>
                         </div>
                         
                         <div>
@@ -109,7 +166,6 @@
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: 100%"></div>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">獎勵：100 點環保積分</p>
                         </div>
                         
                         <div>
@@ -120,7 +176,6 @@
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: 60%"></div>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">獎勵：75 點環保積分</p>
                         </div>
                     </div>
                     
@@ -130,42 +185,11 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-xl font-bold mb-6">每日任務</h3>
+                    <h3 class="text-xl font-bold mb-4">我的成就</h3>
                     
-                    <div class="space-y-6">
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="font-medium">簽到</span>
-                                <span class="text-[#FF6B00]">完成!</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 100%"></div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1">獎勵：10 點環保積分</p>
-                        </div>
-                        
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="font-medium">瀏覽 5 個食物點位</span>
-                                <span class="text-[#FF6B00]">3/5</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%"></div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1">獎勵：20 點環保積分</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 成就區塊 -->
-            <div class="space-y-8">
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-xl font-bold mb-6">我的成就</h3>
-                    
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         <!-- 貓熊成就 -->
                         <div class="badge bg-gradient-to-br from-[#FF6B00] to-[#FF8A3D] rounded-lg p-4 text-center text-white">
                             <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
@@ -177,7 +201,6 @@
                                 </svg>
                             </div>
                             <p class="text-sm font-medium">貓熊達人</p>
-                            <p class="text-xs opacity-80">已領取 10 次剩食</p>
                         </div>
                         
                         <!-- 狐狸成就 -->
@@ -192,7 +215,6 @@
                                 </svg>
                             </div>
                             <p class="text-sm font-medium">狐狸先鋒</p>
-                            <p class="text-xs opacity-80">分享 5 次食物</p>
                         </div>
                         
                         <div class="badge bg-gradient-to-br from-[#FF6B00] to-[#FF8A3D] rounded-lg p-4 text-center text-white">
@@ -200,7 +222,6 @@
                                 <i data-feather="heart" class="w-6 h-6"></i>
                             </div>
                             <p class="text-sm font-medium">分享天使</p>
-                            <p class="text-xs opacity-80">獲得 10 個讚</p>
                         </div>
                         
                         <div class="badge bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg p-4 text-center text-white opacity-50">
@@ -213,61 +234,66 @@
                                 </svg>
                             </div>
                             <p class="text-sm font-medium">貓熊衛士</p>
-                            <p class="text-xs opacity-80">節省 5 公斤食物</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold">永續等級</h3>
-                        <span class="text-2xl font-bold text-[#FF6B00]">Lv.8</span>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span>當前經驗值</span>
-                            <span>750/1000</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 75%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <i data-feather="award" class="w-5 h-5 text-[#FF6B00] mr-2"></i>
-                                <span>環保積分</span>
-                            </div>
-                            <span class="font-bold">1,250</span>
                         </div>
                         
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <i data-feather="package" class="w-5 h-5 text-[#FF6B00] mr-2"></i>
-                                <span>已節省食物</span>
+                        <div class="badge bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg p-4 text-center text-white opacity-50">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 6L12 2L16 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 2V14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M4 10C4 10 6 14 12 14C18 14 20 10 20 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6 18C7.5 16 9.5 15 12 15C14.5 15 16.5 16 18 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10 20.5C10.5 20 11 20 12 20C13 20 13.5 20 14 20.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
                             </div>
-                            <span class="font-bold">3.8 公斤</span>
+                            <p class="text-sm font-medium">狐狸達人</p>
                         </div>
                         
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <i data-feather="cloud" class="w-5 h-5 text-[#FF6B00] mr-2"></i>
-                                <span>減少碳排放</span>
+                        <div class="badge bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg p-4 text-center text-white opacity-50">
+                            <div class="bg-white bg-opacity-20 rounded-full p-3 mx-auto mb-2 w-12 h-12 flex items-center justify-center">
+                                <i data-feather="users" class="w-6 h-6"></i>
                             </div>
-                            <span class="font-bold">5.2 公斤</span>
+                            <p class="text-sm font-medium">社群之星</p>
                         </div>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center justify-between">
+                        <div>
+                            <span class="text-sm text-gray-500">永續等級</span>
+                            <div class="flex items-center">
+                                <span class="text-xl font-bold mr-2">Lv.8</span>
+                                <div class="progress-bar w-24">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="text-[#FF6B00] hover:text-[#FF8A3D] flex items-center">
+                            查看全部成就
+                            <i data-feather="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            feather.replace();
-        });
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Modal functions
+        function closeAddFoodModal() {
+            document.getElementById('addFoodModal').classList.add('hidden');
+        }
+
+        function openAddFoodModal() {
+            document.getElementById('addFoodModal').classList.remove('hidden');
+        }
+
+        function publishFood() {
+            // Add your publish food logic here
+            closeAddFoodModal();
+        }
     </script>
 </body>
 </html> 
